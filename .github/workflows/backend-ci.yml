@@ -37,7 +37,7 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ghcr.io/zaki0xff/glowmate/glowmate-api:latest # Using the convention from docker-compose.yml
+          tags: ghcr.io/${{ github.repository_owner }}/glowmate/glowmate-api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
