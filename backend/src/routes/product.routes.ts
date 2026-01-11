@@ -14,16 +14,24 @@ router.get(
     const skip = (Number(page) - 1) * Number(limit);
     const take = Number(limit);
 
-    const where: any = {};
+    interface ProductWhereInput {
+      OR?: Array<{
+        name?: { contains: string; mode: 'insensitive' };
+        brand?: { contains: string; mode: 'insensitive' };
+      }>;
+      category?: string;
+    }
+
+    const where: ProductWhereInput = {};
     
-    if (search) {
+    if (search && typeof search === 'string') {
       where.OR = [
-        { name: { contains: search as string, mode: 'insensitive' } },
-        { brand: { contains: search as string, mode: 'insensitive' } },
+        { name: { contains: search, mode: 'insensitive' } },
+        { brand: { contains: search, mode: 'insensitive' } },
       ];
     }
     
-    if (category) {
+    if (category && typeof category === 'string') {
       where.category = category;
     }
 
