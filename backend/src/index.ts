@@ -1,10 +1,14 @@
 import express from 'express';
 import type { Request, Response } from 'express';
 import cors from 'cors';
-import { env } from 'bun';
 
 const app = express();
 const port = 3000;
+
+// Get environment variables (works with both Bun and Node)
+const getEnv = (key: string, defaultValue?: string): string | undefined => {
+  return process.env[key] || defaultValue;
+};
 
 // CORS Configuration
 app.use(cors({
@@ -22,7 +26,7 @@ app.get('/', (req: Request, res: Response) => {
   res.json({
     status: 'ok',
     message: 'GlowMate API v1',
-    version: env.VERSION || '0.0.1-dev',
+    version: getEnv('VERSION', '0.0.1-dev'),
     timestamp: new Date().toISOString()
   });
 });
@@ -54,14 +58,14 @@ app.use((err: Error, req: Request, res: Response, next: any) => {
   console.error('Error:', err);
   res.status(500).json({
     error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+    message: getEnv('NODE_ENV') === 'development' ? err.message : 'Something went wrong'
   });
 });
 
 // Start server
 app.listen(port, () => {
   console.log(`🚀 GlowMate API running on http://localhost:${port}`);
-  console.log(`📊 Database: ${process.env.DATABASE_URL ? '✅ Connected' : '❌ Not configured'}`);
-  console.log(`🔧 Environment: ${env.NODE_ENV || 'development'}`);
-  console.log(`📦 Version: ${env.VERSION || '0.0.1-dev'}`);
+  console.log(`📊 Database: ${getEnv('DATABASE_URL') ? '✅ Connected' : '❌ Not configured'}`);
+  console.log(`🔧 Environment: ${getEnv('NODE_ENV', 'development')}`);
+  console.log(`📦 Version: ${getEnv('VERSION', '0.0.1-dev')}`);
 });
