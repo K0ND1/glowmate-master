@@ -6,6 +6,10 @@ import helmet from 'helmet';
 // import cookieParser from 'cookie-parser'; // Removed
 import rateLimit from 'express-rate-limit';
 
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import swaggerOptions from './config/swagger.config';
+
 // Import routes
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
@@ -19,6 +23,10 @@ import waitlistRoutes from './routes/waitlist.routes';
 const app = express();
 app.set('trust proxy', 1); // Trust first proxy (required for rate limiting behind load balancers)
 const port = 3000;
+
+// Swagger Setup
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // CORS Configuration
 app.use(cors({

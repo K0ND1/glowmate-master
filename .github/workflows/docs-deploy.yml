@@ -1,0 +1,55 @@
+# .github/workflows/docs-deploy.yml
+
+name: Docs - Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # Trigger only when routes or docs config change
+      - 'backend/src/routes/**'
+      - 'backend/src/config/**'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  build-and-deploy-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # To push to gh-pages branch
+      pages: write    # To deploy to GitHub Pages
+      id-token: write # To authenticate with GitHub Pages
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+      
+      - name: Install backend dependencies
+        run: cd backend && bun install
+
+      - name: Generate Swagger/OpenAPI spec
+        run: cd backend && bun run docs:generate
+        # This creates the file ./docs/swagger.json relative to the project root
+
+      - name: Install Redoc CLI
+        run: npm install -g redoc-cli
+
+      - name: Bundle docs into a single HTML file
+        run: redoc-cli bundle ./docs/swagger.json -o ./docs/index.html
+      
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
