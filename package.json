@@ -1,0 +1,17 @@
+{
+    "name": "glowmate-monorepo",
+    "private": true,
+    "workspaces": [
+        "backend",
+        "frontend/web",
+        "frontend/react_native"
+    ],
+    "scripts": {
+        "test": "bun test backend",
+        "test:backend": "bun test backend",
+        "test:all": "bun run test:backend"
+    },
+    "devDependencies": {
+        "@react-native/metro-config": "^0.82.1"
+    }
+}

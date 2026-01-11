@@ -1,0 +1,116 @@
+{
+    "translation": {
+        "hero": {
+            "badge": "The Future of Skincare is Here",
+            "title": "Your Personal",
+            "subtitle": "AI Dermatologist",
+            "description": "GlowMate is born to help people with dermatologic issues and allergies. Scan products, analyze ingredients, and let AI discover what truly works for <1>your skin</1>.",
+            "cta": "Join the Waitlist",
+            "secondaryCta": "How it Works",
+            "pills": {
+                "smartScanning": "Smart Scanning",
+                "allergyShield": "Allergy Shield",
+                "communityReviews": "Community Reviews",
+                "aiAnalysis": "AI Analysis"
+            }
+        },
+        "premise": {
+            "title": "Skincare,",
+            "subtitle": "Simplified",
+            "description": "From analyzing your shelf to scanning new finds, GlowMate acts as your intelligent dermatological companion.",
+            "steps": {
+                "1": {
+                    "title": "Tell us about you",
+                    "description": "Write about your skin, your routine, and your issues. The more you share, the better GlowMate understands you."
+                },
+                "2": {
+                    "title": "AI Analysis",
+                    "description": "Our AI reviews your current products and routine against your unique skin profile to find what works."
+                },
+                "3": {
+                    "title": "Shop with Confidence",
+                    "description": "Scan product ingredients right from the shelf. We'll instantly warn you about allergens or bad matches."
+                }
+            }
+        },
+        "features": {
+            "title": "Everything you need for",
+            "subtitle": "Glowing Skin",
+            "description": "Powerful tools wrapped in a beautiful, easy-to-use interface.",
+            "scanning": {
+                "title": "Smart Scanning",
+                "description": "Point your camera at any product. We extract the ingredient list instantly and cross-reference it with your profile."
+            },
+            "allergies": {
+                "title": "Allergy Shield",
+                "description": "Never worry about reactions again. GlowMate highlights hidden allergens and irritants specific to your skin."
+            },
+            "community": {
+                "title": "Community Wisdom",
+                "description": "Read reviews from people with exact skin matches. Trusted advice from the community, filtered by data."
+            },
+            "ai": {
+                "title": "AI Analysis",
+                "description": "Our advanced AI learns from thousands of ingredients to recommend products that actually deliver results."
+            }
+        },
+        "join": {
+            "title": "Join the exclusive",
+            "highlight": "waitlist",
+            "description": "Be the first to experience the future of skincare. Early access members get premium features for free for the first 3 months.",
+            "benefits": {
+                "access": "Early access to AI skin analysis",
+                "community": "Exclusive community access",
+                "support": "Priority support"
+            },
+            "form": {
+                "title": "Reserve your spot",
+                "emailLabel": "Email Address",
+                "emailPlaceholder": "name@example.com",
+                "submit": "Join Waitlist",
+                "processing": "Processing...",
+                "disclaimer": "By joining, you agree to our Terms of Service and Privacy Policy. We respect your inbox and never spam."
+            },
+            "success": {
+                "title": "You're on the list!",
+                "position": "Current Position",
+                "inLine": "in line",
+                "invite": "Invite friends & jump the queue!",
+                "shareDesc": "Share your unique link. You'll get",
+                "points": "+10 points",
+                "friend": "for every friend who joins.",
+                "copied": "Copied to clipboard!",
+                "registerAnother": "Register another email"
+            },
+            "errors": {
+                "emailRequired": "Email is required.",
+                "invalidEmail": "Please enter a valid email address.",
+                "generic": "Something went wrong. Please try again."
+            }
+        },
+        "navbar": {
+            "brand": "GlowMate",
+            "features": "Features",
+            "howItWorks": "How it works",
+            "pricing": "Pricing",
+            "login": "Log in",
+            "getStarted": "Get Started"
+        },
+        "footer": {
+            "tagline": "Your journey to better skin starts here.",
+            "product": "Product",
+            "company": "Company",
+            "legal": "Legal",
+            "features": "Features",
+            "faq": "FAQ",
+            "about": "About Us",
+            "contact": "Contact",
+            "privacy": "Privacy Policy",
+            "terms": "Terms of Service",
+            "cookies": "Cookie Policy",
+            "rights": "All rights reserved.",
+            "madeWith": "Made with",
+            "by": "by GlowMate team"
+        }
+    }
+}

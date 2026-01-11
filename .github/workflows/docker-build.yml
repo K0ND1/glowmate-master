@@ -1,0 +1,173 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/docker-build.yml'
+  pull_request:
+    branches:
+      - master
+      - dev
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+  workflow_dispatch:  # Możliwość ręcznego uruchomienia
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/glowmate-api
+  IMAGE_NAME_WEB: ${{ github.repository }}/glowmate-web
+
+jobs:
+  # Główny build API (zawsze)
+  build-api:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+          
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            VERSION=${{ github.sha }}
+
+      - name: Image digest
+        run: echo ${{ steps.meta.outputs.digest }}
+
+  # Build Web (Frontend)
+  build-web:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEB }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Web Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend/web
+          file: ./frontend/web/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            VITE_API_URL=https://api.glowmate.tech
+
+      - name: Image digest
+        run: echo ${{ steps.meta.outputs.digest }}
+
+  # Test docker-compose (wszystko w jednym)
+  test-compose-all:
+    runs-on: ubuntu-latest
+    needs: build-api
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Test docker-compose.yml (all-in-one)
+        run: |
+          cd docker
+          docker-compose config
+          echo "✅ docker-compose.yml is valid"
+
+  # Test docker-compose split (infrastruktura + API)
+  test-compose-split:
+    runs-on: ubuntu-latest
+    needs: build-api
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Test docker-compose.infra.yml
+        run: |
+          cd docker
+          docker-compose -f docker-compose.infra.yml config
+          echo "✅ docker-compose.infra.yml is valid"
+
+      - name: Test docker-compose.api.yml
+        run: |
+          cd docker
+          docker-compose -f docker-compose.api.yml config
+          echo "✅ docker-compose.api.yml is valid"
+
+      - name: Test init-db.sh script
+        run: |
+          cd backend
+          if [ -f init-db.sh ]; then
+            bash -n init-db.sh
+            echo "✅ init-db.sh syntax is valid"
+          else
+            echo "⚠️ init-db.sh not found"
+          fi

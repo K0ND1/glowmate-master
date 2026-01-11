@@ -1,0 +1,96 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:  # Ręczne uruchomienie
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      compose_type:
+        description: 'Docker Compose type'
+        required: true
+        default: 'split'
+        type: choice
+        options:
+          - all-in-one
+          - split
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy - All-in-One
+        if: inputs.compose_type == 'all-in-one'
+        run: |
+          echo "🚀 Deploying all-in-one setup to ${{ inputs.environment }}"
+          echo "📦 Using: docker-compose.yml"
+          echo ""
+          echo "Commands to run on server:"
+          echo "  cd /path/to/glowmate/backend"
+          echo "  docker-compose pull"
+          echo "  docker-compose up -d"
+          echo "  docker-compose ps"
+
+      - name: Deploy - Split Infrastructure
+        if: inputs.compose_type == 'split'
+        run: |
+          echo "🚀 Deploying split setup to ${{ inputs.environment }}"
+          echo "📦 Using: docker-compose.infra.yml + docker-compose.api.yml"
+          echo ""
+          echo "Commands to run on server:"
+          echo ""
+          echo "1. First time setup (infrastructure):"
+          echo "   cd /path/to/glowmate/backend"
+          echo "   docker-compose -f docker-compose.infra.yml up -d"
+          echo "   docker-compose -f docker-compose.infra.yml ps"
+          echo ""
+          echo "2. Deploy/Update API:"
+          echo "   docker-compose -f docker-compose.api.yml pull"
+          echo "   docker-compose -f docker-compose.api.yml up -d"
+          echo "   docker-compose -f docker-compose.api.yml ps"
+          echo ""
+          echo "3. Check logs:"
+          echo "   docker-compose -f docker-compose.api.yml logs -f"
+
+      - name: Deployment Summary
+        run: |
+          echo "📊 Deployment Summary"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Compose Type: ${{ inputs.compose_type }}"
+          echo "Image: ghcr.io/${{ github.repository }}/glowmate-api:latest"
+          echo ""
+          echo "✅ Deployment instructions generated!"
+          echo "🔗 Image available at: https://ghcr.io/${{ github.repository }}"
+
+      - name: Create deployment comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🚀 Deployment Ready
+
+              **Environment:** ${{ inputs.environment }}
+              **Compose Type:** ${{ inputs.compose_type }}
+              **Image:** \`ghcr.io/${{ github.repository }}/glowmate-api:latest\`
+
+              ### Quick Start Commands:
+              \`\`\`bash
+              cd backend
+              ${{ inputs.compose_type == 'all-in-one' && 'docker-compose up -d' || 'docker-compose -f docker-compose.infra.yml up -d && docker-compose -f docker-compose.api.yml up -d' }}
+              \`\`\`
+              `
+            })

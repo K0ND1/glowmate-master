@@ -1,0 +1,215 @@
+// GlowMate Database Schema - Prisma ORM
+// Skincare product tracking and personalization system
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ====================
+// USERS
+// ====================
+model User {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email            String    @unique @db.VarChar(255)
+  password         String    @db.VarChar(255)
+  name             String    @db.VarChar(100)
+  age              Int?
+  skinProfile      Json      @default("{}") @map("skin_profile")
+  isPremium        Boolean   @default(false) @map("is_premium")
+  premiumExpiresAt DateTime? @map("premium_expires_at") @db.Timestamp()
+  
+  // Auth & Verification
+  isVerified        Boolean   @default(false) @map("is_verified")
+
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamp()
+
+  // Relations
+  reviews              Review[]
+  skincareRoutines     SkincareRoutine[]
+  passwordResetTokens  PasswordResetToken[]
+  verificationTokens   VerificationToken[]
+  aiAnalyses           AiAnalysis[]
+
+  @@index([email], map: "idx_users_email")
+  @@index([createdAt], map: "idx_users_created_at")
+  @@index([isPremium], map: "idx_users_premium")
+  @@map("users")
+}
+
+// ====================
+// VERIFICATION TOKENS
+// ====================
+model VerificationToken {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  token     String    @unique @db.VarChar(255)
+  expiresAt DateTime  @map("expires_at") @db.Timestamp()
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token], map: "idx_verification_tokens_token")
+  @@index([expiresAt], map: "idx_verification_tokens_expires")
+  @@map("verification_tokens")
+}
+
+// ====================
+// PRODUCTS
+// ====================
+model Product {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  barcode       String?  @unique @db.VarChar(50)
+  name          String   @db.VarChar(255)
+  brand         String?  @db.VarChar(100)
+  category      String?  @db.VarChar(50)
+  description   String?  @db.Text
+  ingredients   Json     @default("[]")
+  tags          Json     @default("[]")
+  imageUrl      String?  @map("image_url") @db.VarChar(500)
+  price         Decimal? @db.Decimal(10, 2)
+  averageRating Decimal  @default(0) @map("average_rating") @db.Decimal(3, 2)
+  reviewCount   Int      @default(0) @map("review_count")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+
+  // Relations
+  reviews          Review[]
+  skincareRoutines SkincareRoutine[]
+
+  @@index([barcode], map: "idx_products_barcode")
+  @@index([brand], map: "idx_products_brand")
+  @@index([category], map: "idx_products_category")
+  @@index([price], map: "idx_products_price")
+  @@index([averageRating], map: "idx_products_rating")
+  @@map("products")
+}
+
+// ====================
+// REVIEWS
+// ====================
+model Review {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  rating    Int      @db.Integer
+  comment   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId], map: "idx_reviews_user_id")
+  @@index([productId], map: "idx_reviews_product_id")
+  @@index([rating], map: "idx_reviews_rating")
+  @@index([createdAt(sort: Desc)], map: "idx_reviews_created")
+  @@map("reviews")
+}
+
+// ====================
+// SKINCARE ROUTINES
+// ====================
+model SkincareRoutine {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  productId  String   @map("product_id") @db.Uuid
+  timeOfDay  String   @map("time_of_day") @db.VarChar(20)
+  orderIndex Int      @map("order_index")
+  notes      String?  @db.Text
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId, timeOfDay])
+  @@index([userId], map: "idx_skincare_routines_user_id")
+  @@index([timeOfDay], map: "idx_skincare_routines_time")
+  @@map("skincare_routines")
+}
+
+// ====================
+// INGREDIENTS
+// ====================
+model Ingredient {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String   @unique @db.VarChar(255)
+  category           String?  @db.VarChar(100)
+  description        String?  @db.Text
+  benefits           Json     @default("[]")
+  concerns           Json     @default("[]")
+  comedogenicRating  Int?     @map("comedogenic_rating")
+  isCommonAllergen   Boolean  @default(false) @map("is_common_allergen")
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamp()
+
+  @@index([category], map: "idx_ingredients_category")
+  @@index([comedogenicRating], map: "idx_ingredients_comedogenic")
+  @@map("ingredients")
+}
+
+// ====================
+// PASSWORD RESET TOKENS
+// ====================
+model PasswordResetToken {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  token     String    @unique @db.VarChar(255)
+  expiresAt DateTime  @map("expires_at") @db.Timestamp()
+  usedAt    DateTime? @map("used_at") @db.Timestamp()
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token], map: "idx_reset_tokens_token")
+  @@index([expiresAt], map: "idx_reset_tokens_expires")
+  @@map("password_reset_tokens")
+}
+
+// ====================
+// AI ANALYSES
+// ====================
+model AiAnalysis {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  analysisType String   @map("analysis_type") @db.VarChar(50)
+  inputData    Json     @map("input_data")
+  result       Json
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp()
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "idx_ai_analyses_user_id")
+  @@index([analysisType], map: "idx_ai_analyses_type")
+  @@index([createdAt(sort: Desc)], map: "idx_ai_analyses_created")
+  @@map("ai_analyses")
+}
+
+// ====================
+// WAITLIST (REFERRAL SYSTEM)
+// ====================
+model Waitlist {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String   @unique @db.VarChar(255)
+  referralCode String   @unique @map("referral_code") @db.VarChar(20)
+  referredBy   String?  @map("referred_by") @db.VarChar(20)
+  points       Int      @default(0)
+  isVerified   Boolean  @default(false) @map("is_verified")
+  verificationToken String? @unique @map("verification_token") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp()
+
+  @@index([points(sort: Desc), createdAt(sort: Asc)], map: "idx_waitlist_ranking")
+  @@map("waitlist")
+}

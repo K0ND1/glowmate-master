@@ -1,0 +1,32 @@
+# Docker
+node_modules/
+npm-debug.log
+.dockerignore
+Dockerfile
+docker-compose.yml
+.git/
+.gitignore
+
+# Environment
+.env
+.env.local
+.env.test
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
+logs/

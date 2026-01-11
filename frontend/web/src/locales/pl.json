@@ -1,0 +1,116 @@
+{
+    "translation": {
+        "hero": {
+            "badge": "Przyszłość pielęgnacji skóry jest tutaj",
+            "title": "Twój Osobisty",
+            "subtitle": "Dermatolog AI",
+            "description": "GlowMate powstał, aby pomagać osobom z problemami dermatologicznymi i alergiami. Skanuj produkty, analizuj składy i pozwól AI odkryć to, co naprawdę działa na <1>Twoją skórę</1>.",
+            "cta": "Dołącz do listy oczekujących",
+            "secondaryCta": "Jak to działa",
+            "pills": {
+                "smartScanning": "Inteligentne Skanowanie",
+                "allergyShield": "Tarcza Antyalergiczna",
+                "communityReviews": "Opinie Społeczności",
+                "aiAnalysis": "Analiza AI"
+            }
+        },
+        "premise": {
+            "title": "Pielęgnacja,",
+            "subtitle": "Uproszczona",
+            "description": "Od analizy Twojej półki po skanowanie nowości w sklepie – GlowMate działa jak Twój inteligentny towarzysz dermatologiczny.",
+            "steps": {
+                "1": {
+                    "title": "Opowiedz nam o sobie",
+                    "description": "Napisz o swojej skórze, rutynie i problemach. Im więcej udostępnisz, tym lepiej GlowMate Cię zrozumie."
+                },
+                "2": {
+                    "title": "Analiza AI",
+                    "description": "Nasza AI weryfikuje Twoje obecne produkty i rutynę pod kątem Twojego unikalnego profilu skóry, aby znaleźć to, co działa."
+                },
+                "3": {
+                    "title": "Kupuj bez obaw",
+                    "description": "Skanuj składy produktów prosto z półki. Natychmiast ostrzeżymy Cię o alergenach lub złym dopasowaniu."
+                }
+            }
+        },
+        "features": {
+            "title": "Wszystko, czego potrzebujesz dla",
+            "subtitle": "Promiennej Skóry",
+            "description": "Potężne narzędzia zamknięte w pięknym, łatwym w obsłudze interfejsie.",
+            "scanning": {
+                "title": "Inteligentne Skanowanie",
+                "description": "Skieruj aparat na dowolny produkt. Błyskawicznie wyodrębnimy listę składników i porównamy ją z Twoim profilem."
+            },
+            "allergies": {
+                "title": "Tarcza Antyalergiczna",
+                "description": "Nigdy więcej nie martw się o reakcje uczuleniowe. GlowMate podświetla ukryte alergeny i czynniki drażniące specyficzne dla Twojej skóry."
+            },
+            "community": {
+                "title": "Wiedza Społeczności",
+                "description": "Czytaj recenzje osób o dokładnie takim samym typie skóry. Zaufane porady od społeczności, filtrowane przez dane."
+            },
+            "ai": {
+                "title": "Analiza AI",
+                "description": "Nasza zaawansowana AI uczy się na tysiącach składników, aby rekomendować produkty, które faktycznie przynoszą efekty."
+            }
+        },
+        "join": {
+            "title": "Dołącz do ekskluzywnej",
+            "highlight": "listy oczekujących",
+            "description": "Bądź pierwszą osobą, która doświadczy przyszłości pielęgnacji. Członkowie z wczesnym dostępem otrzymują funkcje premium za darmo przez pierwsze 3 miesiące.",
+            "benefits": {
+                "access": "Wczesny dostęp do analizy skóry AI",
+                "community": "Dostęp do zamkniętej społeczności",
+                "support": "Priorytetowe wsparcie"
+            },
+            "form": {
+                "title": "Zarezerwuj miejsce",
+                "emailLabel": "Adres email",
+                "emailPlaceholder": "nazwa@przyklad.pl",
+                "submit": "Dołącz do listy",
+                "processing": "Przetwarzanie...",
+                "disclaimer": "Dołączając, akceptujesz nasz Regulamin i Politykę Prywatności. Szanujemy Twoją skrzynkę i nigdy nie wysyłamy spamu."
+            },
+            "success": {
+                "title": "Jesteś na liście!",
+                "position": "Obecna pozycja",
+                "inLine": "w kolejce",
+                "invite": "Zaproś znajomych i przeskocz kolejkę!",
+                "shareDesc": "Udostępnij swój unikalny link. Otrzymasz",
+                "points": "+10 punktów",
+                "friend": "za każdego znajomego, który dołączy.",
+                "copied": "Skopiowano do schowka!",
+                "registerAnother": "Zarejestruj inny email"
+            },
+            "errors": {
+                "emailRequired": "Email jest wymagany.",
+                "invalidEmail": "Wpisz poprawny adres email.",
+                "generic": "Coś poszło nie tak. Spróbuj ponownie."
+            }
+        },
+        "navbar": {
+            "brand": "GlowMate",
+            "features": "Funkcje",
+            "howItWorks": "Jak to działa",
+            "pricing": "Cennik",
+            "login": "Zaloguj się",
+            "getStarted": "Rozpocznij"
+        },
+        "footer": {
+            "tagline": "Twoja podróż do lepszej skóry zaczyna się tutaj.",
+            "product": "Produkt",
+            "company": "Firma",
+            "legal": "Prawne",
+            "features": "Funkcje",
+            "faq": "FAQ",
+            "about": "O nas",
+            "contact": "Kontakt",
+            "privacy": "Polityka Prywatności",
+            "terms": "Regulamin",
+            "cookies": "Polityka Cookies",
+            "rights": "Wszelkie prawa zastrzeżone.",
+            "madeWith": "Stworzone z",
+            "by": "przez zespół GlowMate"
+        }
+    }
+}

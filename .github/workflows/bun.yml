@@ -1,0 +1,35 @@
+name: Bun CI
+
+on:
+  push:
+    branches: [ master, dev ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/bun.yml'
+  pull_request:
+    branches: [ master, dev ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v1 
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: bun install
+
+      - name: Generate Prisma Client
+        working-directory: ./backend
+        run: bun run prisma:generate
+        
+      - name: Run unit tests
+        working-directory: ./backend
+        run: bun test

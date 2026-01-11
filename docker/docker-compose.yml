@@ -1,0 +1,99 @@
+#All in one infra + api
+services:
+  web:
+    build:
+      context: ../frontend/web
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:3000
+    container_name: glowmate_web
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    networks:
+      - glowmate_network
+  postgres:
+    image: postgres:16-alpine
+    container_name: glowmate_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: glowmate_admin
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: glowmate_db
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glowmate_admin -d glowmate_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - glowmate_network
+
+  api:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    env_file:
+      - ../backend/.env
+    container_name: glowmate_api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://glowmate_admin:changeme@postgres:5432/glowmate_db
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - glowmate_network
+    healthcheck:
+      test: ["CMD", "bun", "run", "-e", "fetch('http://localhost:3000/').then(() => process.exit(0)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  redis:
+    image: redis:7-alpine
+    container_name: glowmate_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - glowmate_network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: glowmate_redis_commander
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    networks:
+      - glowmate_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  glowmate_network:
+    driver: bridge

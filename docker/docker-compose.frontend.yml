@@ -1,0 +1,15 @@
+services:
+  web:
+    # image: ghcr.io/zaki0xff/glowmate/glowmate-web:latest
+    build: ../frontend/web
+    container_name: glowmate_web
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    networks:
+      - glowmate_network
+
+networks:
+  glowmate_network:
+    name: glowmate_network
+    external: true
